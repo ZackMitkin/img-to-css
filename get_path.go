@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"image"
-	"image/color"
-	"image/draw"
-	"img_to_css/marching_square"
+	"img_to_css/trace"
 )
 
 func avgColor(img image.RGBA, path []image.Point) string {
@@ -28,19 +26,24 @@ func avgColor(img image.RGBA, path []image.Point) string {
 func getPath(polygon []image.Point, img image.RGBA) ([]image.Point, string) {
 	var path []image.Point
 
-	m := image.NewRGBA(img.Bounds())
-	draw.Draw(m, m.Bounds(), &image.Uniform{C: color.Black}, image.Point{X: 0, Y: 0}, draw.Src)
-	for _, px := range polygon {
-		m.Set(px.X, px.Y, color.White)
-	}
-	contours := marching_square.Process(m, func(r, g, b, a uint32) bool {
-		return r+g+b > 0
-	})
-	if contours == nil {
-		return []image.Point{}, ""
-	}
-	for _, point := range contours {
-		path = append(path, point)
-	}
+	path = trace.GetPolygonPath(img, polygon)
+
+	//m := image.NewRGBA(img.Bounds())
+	//draw.Draw(m, m.Bounds(), &image.Uniform{C: color.Black}, image.Point{X: 0, Y: 0}, draw.Src)
+	//for _, px := range polygon {
+	//	m.Set(px.X, px.Y, color.White)
+	//}
+	//
+	//_ = imgio.Save("test.png", m, imgio.PNGEncoder())
+
+	//contours := marching_square.Process(m, func(r, g, b, a uint32) bool {
+	//	return r+g+b > 0
+	//})
+	//if contours == nil {
+	//	return []image.Point{}, ""
+	//}
+	//for _, point := range contours {
+	//	path = append(path, point)
+	//}
 	return path, avgColor(img, polygon)
 }

@@ -36,6 +36,6 @@ func processImage(path string) {
 		}(idx, polygon, *m, &wg)
 	}
 	wg.Wait()
-	//vectorize.Vectorised(*m, paths,colors, "svg")
+	//vectorize.Vectorised(*m, paths, colors, "svg")
 	css.WritePolygons(*m, paths, colors)
 }
