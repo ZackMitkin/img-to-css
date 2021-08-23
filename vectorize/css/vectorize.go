@@ -3,15 +3,7 @@ package css
 import (
 	"fmt"
 	"image"
-	"image/color"
-	"log"
-	"os"
 )
-
-func colorToRGB(c color.Color) string {
-	r, g, b, _ := c.RGBA()
-	return fmt.Sprintf("rgb(%d, %d, %d)", r>>8, g>>8, b>>8)
-}
 
 func WritePolygonsVideo(frame int, img image.RGBA, paths [][]image.Point, colors []string) (string, string) {
 	width := float32(img.Bounds().Dx())
@@ -41,18 +33,12 @@ func WritePolygonsVideo(frame int, img image.RGBA, paths [][]image.Point, colors
 	return html, css
 }
 
-func WritePolygons(img image.RGBA, paths [][]image.Point, colors []string) {
+func WritePolygons(img image.RGBA, paths [][]image.Point, colors []string) string {
 	width := float32(img.Bounds().Dx())
 	height := float32(img.Bounds().Dy())
-	css := fmt.Sprintf(".component {width: %vvw; height: %vvw; position: absolute}", 100, 100*(height/width))
-	html := `<!DOCTYPE html>
-			<html>
-			<head>
-			<title>img to css</title>
-			<link rel="stylesheet" href="style.css">
-			</head>
-			<body>
-			`
+	css := fmt.Sprintf(`
+			.component {width: %vvw; height: %vvw; position: absolute} \n`, 100, 100*(height/width))
+	htmlBody := ""
 	for idx, path := range paths {
 		if len(path) == 0 {
 			continue
@@ -69,21 +55,22 @@ func WritePolygons(img image.RGBA, paths [][]image.Point, colors []string) {
 		polygon += fmt.Sprintf(" %.2f%% %.2f%%", 100*x1/width, 100*y1/height)
 		c := colors[idx]
 
-		class := fmt.Sprintf(".%v {clip-path: polygon(%v); background-color: %v}", className, polygon, c)
-		html += fmt.Sprintf(`<div class="component %v"></div>`, className)
+		class := fmt.Sprintf(".%v {clip-path: polygon(%v); background-color: %v} \n", className, polygon, c)
+		htmlBody += fmt.Sprintf(`<div class="component %v"></div>`, className)
 		css += class
 	}
-	html += `
-			</body>
-			</html>`
-	htmlFile, err := os.Create("output/html/index.html")
-	cssFile, err := os.Create("output/html/style.css")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	_, err = htmlFile.WriteString(html)
-	_, err = cssFile.WriteString(css)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	html := fmt.Sprintf(`
+		<!DOCTYPE html>
+		<html>
+		<head>
+		<title>img to css</title>
+		</head>
+		<style>
+		%v
+		</style>
+		<body>
+		%v
+		</body>
+		</html>`, css, htmlBody)
+	return html
 }

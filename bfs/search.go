@@ -7,7 +7,7 @@ import (
 	"math"
 )
 
-const colorDiff = 40
+const colorDiff = 20
 
 func similarColor(pointA, pointB color.Color) bool {
 	R1, G1, B1, _ := pointA.RGBA()
@@ -94,7 +94,7 @@ func GetAllPolygons(img image.RGBA) [][]image.Point {
 	log.Printf("Filter out start length: %v \n", len(polygons))
 	var filtered [][]image.Point
 	for idx, polygon := range polygons {
-		if len(polygon) < 6 {
+		if len(polygon) < 8 {
 			continue
 		}
 		filtered = append(filtered, polygons[idx])

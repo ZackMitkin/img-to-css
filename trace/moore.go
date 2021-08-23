@@ -131,6 +131,7 @@ findStart:
 		iteration++
 		if startIndex >= 9 {
 			break
+
 		}
 	}
 	return path

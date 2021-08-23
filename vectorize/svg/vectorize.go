@@ -1,4 +1,4 @@
-package vectorize
+package svg
 
 import (
 	"fmt"

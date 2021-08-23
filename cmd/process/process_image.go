@@ -1,21 +1,14 @@
-package main
+package process
 
 import (
-	"fmt"
-	"github.com/anthonynsimon/bild/imgio"
 	"image"
 	"image/draw"
 	"img_to_css/bfs"
-	"img_to_css/css"
+	"img_to_css/vectorize/css"
 	"sync"
 )
 
-func processImage(path string) {
-	img, err := imgio.Open(path)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+func Image(img image.Image) string {
 	m := image.NewRGBA(img.Bounds())
 	draw.Draw(m, m.Bounds(), img, img.Bounds().Min, draw.Src)
 
@@ -23,7 +16,7 @@ func processImage(path string) {
 	var wg sync.WaitGroup
 	paths := make([][]image.Point, len(polygons))
 	colors := make([]string, len(polygons))
-	var sem = make(chan int, 24)
+	var sem = make(chan int, 1)
 	for idx, polygon := range polygons {
 		wg.Add(1)
 		sem <- 1
@@ -37,5 +30,6 @@ func processImage(path string) {
 	}
 	wg.Wait()
 	//vectorize.Vectorised(*m, paths, colors, "svg")
-	css.WritePolygons(*m, paths, colors)
+	html := css.WritePolygons(*m, paths, colors)
+	return html
 }
