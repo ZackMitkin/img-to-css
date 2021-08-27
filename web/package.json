@@ -1,8 +1,8 @@
 {
-  "name": "web",
+  "name": "img-to-css",
   "version": "0.1.0",
-  "homepage": "http://zackmitkin.github.io/img-to-css",
-  "private": true,
+  "homepage": "https://zackmitkin.github.io/img-to-css",
+  "private": false,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
@@ -24,6 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
