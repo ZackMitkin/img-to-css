@@ -15,8 +15,10 @@ import (
 func convertWrapper() js.Func {
 	jsonFunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		imageArr := args[0]
-		callback := args[1]
-
+		colorDiff := args[1]
+		minLineLen := args[2]
+		callback := args[3]
+		log.Println(args)
 		inBuf := make([]uint8, imageArr.Get("byteLength").Int())
 		js.CopyBytesToGo(inBuf, imageArr)
 
@@ -27,7 +29,7 @@ func convertWrapper() js.Func {
 		}
 		log.Println(imgType)
 
-		html := process.Image(img)
+		html := process.Image(img, colorDiff.Float(), minLineLen.Int())
 
 		callback.Invoke(html)
 

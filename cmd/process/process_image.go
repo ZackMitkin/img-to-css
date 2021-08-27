@@ -8,11 +8,11 @@ import (
 	"sync"
 )
 
-func Image(img image.Image) string {
+func Image(img image.Image, colorDiff float64, minLineLength int) string {
 	m := image.NewRGBA(img.Bounds())
 	draw.Draw(m, m.Bounds(), img, img.Bounds().Min, draw.Src)
 
-	polygons := bfs.GetAllPolygons(*m)
+	polygons := bfs.GetAllPolygons(*m, colorDiff, minLineLength)
 	var wg sync.WaitGroup
 	paths := make([][]image.Point, len(polygons))
 	colors := make([]string, len(polygons))
@@ -29,7 +29,6 @@ func Image(img image.Image) string {
 		}(idx, polygon, *m, &wg)
 	}
 	wg.Wait()
-	//vectorize.Vectorised(*m, paths, colors, "svg")
 	html := css.WritePolygons(*m, paths, colors)
 	return html
 }

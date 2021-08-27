@@ -7,9 +7,7 @@ import (
 	"math"
 )
 
-const colorDiff = 20
-
-func similarColor(pointA, pointB color.Color) bool {
+func similarColor(pointA, pointB color.Color, colorDiff float64) bool {
 	R1, G1, B1, _ := pointA.RGBA()
 	R2, G2, B2, _ := pointB.RGBA()
 	red := math.Abs(float64(R1>>8)-float64(R2>>8)) <= colorDiff
@@ -18,7 +16,7 @@ func similarColor(pointA, pointB color.Color) bool {
 	return red && green && blue
 }
 
-func GetAllPolygons(img image.RGBA) [][]image.Point {
+func GetAllPolygons(img image.RGBA, colorDiff float64, minLineLength int) [][]image.Point {
 	width := img.Bounds().Dx()
 	height := img.Bounds().Dy()
 
@@ -51,7 +49,7 @@ func GetAllPolygons(img image.RGBA) [][]image.Point {
 					testColor := img.RGBAAt(x-1, y)
 					testPoint := image.Point{X: x - 1, Y: y}
 					polygon = append(polygon, testPoint)
-					if !visited[x-1][y] && similarColor(testColor, start) {
+					if !visited[x-1][y] && similarColor(testColor, start, colorDiff) {
 						visited[x-1][y] = true
 						queue.push(testPoint)
 					}
@@ -61,7 +59,7 @@ func GetAllPolygons(img image.RGBA) [][]image.Point {
 					testColor := img.RGBAAt(x+1, y)
 					testPoint := image.Point{X: x + 1, Y: y}
 					polygon = append(polygon, testPoint)
-					if !visited[x+1][y] && similarColor(testColor, start) {
+					if !visited[x+1][y] && similarColor(testColor, start, colorDiff) {
 						visited[x+1][y] = true
 						queue.push(testPoint)
 					}
@@ -71,7 +69,7 @@ func GetAllPolygons(img image.RGBA) [][]image.Point {
 					testColor := img.RGBAAt(x, y-1)
 					testPoint := image.Point{X: x, Y: y - 1}
 					polygon = append(polygon, testPoint)
-					if !visited[x][y-1] && similarColor(testColor, start) {
+					if !visited[x][y-1] && similarColor(testColor, start, colorDiff) {
 						visited[x][y-1] = true
 						queue.push(testPoint)
 					}
@@ -80,7 +78,7 @@ func GetAllPolygons(img image.RGBA) [][]image.Point {
 					testColor := img.RGBAAt(x, y+1)
 					testPoint := image.Point{X: x, Y: y + 1}
 					polygon = append(polygon, testPoint)
-					if !visited[x][y+1] && similarColor(testColor, start) {
+					if !visited[x][y+1] && similarColor(testColor, start, colorDiff) {
 						visited[x][y+1] = true
 						queue.push(testPoint)
 					}
@@ -94,7 +92,7 @@ func GetAllPolygons(img image.RGBA) [][]image.Point {
 	log.Printf("Filter out start length: %v \n", len(polygons))
 	var filtered [][]image.Point
 	for idx, polygon := range polygons {
-		if len(polygon) < 8 {
+		if len(polygon) < minLineLength {
 			continue
 		}
 		filtered = append(filtered, polygons[idx])
